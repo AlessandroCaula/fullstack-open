@@ -6,7 +6,43 @@ This module was crafted by the Engineering Team at Smartly.io. At Smartly.io, we
 
 # Table of Content
 
+- [Part 11](#part-11)
+  - [Part 11a - Introduction to CI/CD](#part-11a---introduction-to-cicd)
+    - [Getting software to production](#getting-software-to-production)
+    - [Some useful terms](#some-useful-terms)
+      - [Branches](#branches)
+      - [Pull request](#pull-request)
+      - [Build](#build)
+      - [Deploy](#deploy)
+    - [What is CI?](#what-is-ci)
+    - [Is this CD thing related?](#is-this-cd-thing-related)
+    - [Why is it important?](#why-is-it-important)
+    - [Important principles](#important-principles)
 
+  - [Part 11b - Getting started with GitHub Actions](#part-11b---getting-started-with-github-actions)
+    - [Basic needs](#basic-needs)
+    - [Getting started with workflows](#getting-started-with-workflows)
+    - [Setting up lint, test and build steps](#setting-up-lint-test-and-build-steps)
+
+  - [Part 11c - Deployment](#part-11c---deployment)
+    - [Anything that can go wrong...](#anything-that-can-go-wrong)
+    - [What does a good deployment system do?](#what-does-a-good-deployment-system-do)
+    - [Has the app been deployed?](#has-the-app-been-deployed)
+
+  - [Part 11d - Keeping green](#part-11d---keeping-green)
+    - [Working with Pull Requests](#working-with-pull-requests)
+    - [Versioning](#versioning)
+      - [Semantic Versioning and Hash Versioning](#semantic-versioning-and-hash-versioning)
+      - [But what does the version point to?](#but-what-does-the-version-point-to)
+      - [Versioning order](#versioning-order)
+      - [Comparing the Two](#comparing-the-two)
+      - [Best of Both Worlds](#best-of-both-worlds)
+    - [A note about using third-party actions](#a-note-about-using-third-party-actions)
+    - [Keep the main branch protected](#keep-the-main-branch-protected)
+
+  - [Part 11e - Expanding Further](#part-11e---expanding-further)
+    - [Visibility and Understanding](#visibility-and-understanding)
+    - [Notification](#notification)
 
 # Part 11
 
@@ -1178,5 +1214,55 @@ You should protect it to:
 - Require all pull request to be approved before merging
 
 - require all status checks to pass before merging
+
+<hr style="border: 2px solid #9C7AA6">
+
+## Part 11e - Expanding Further
+
+This part focuses on building a simple, effective, and robust CI system that helps developers to work together, maintain code quality, and deploy safely. What more could one possibly want? In the real world, there are more fingers in the pie than just developers and users. Even if that weren't true, even for developers, there's a lot more value to be gained from CI systems than just the things above.
+
+### Visibility and Understanding
+
+In all but the smallest companies, decisions on what to develop are not made exclusively by developers. The term 'stakeholder' is often used to refer to people, both inside and outside the development team, who may have some interest in keeping an eye on the progress of the development. To this end, there are often integrations between Git and whatever project management/bug tracking software the team is using.
+
+A common use of this is to have some reference to the tracking system in Git pull requests or commits. This way, for example, when you're working on issue number 123, you might name your pull request `BUG-123: Fix user copy issue` and the bug tracking system would notice the first part of the PR name and automatically move the issue to `Done` when the PR is merged.
+
+### Notification
+
+When the CI process finishes quickly, it can be convenient to just watch it execute and wait for the result. As projects become more complex, so too does the process of building and testing the code. This can quickly lead to a situation where it takes long enough to generate the build result that a developer may want to begin working on another task. This in turn leads to a forgotten build.
+
+This is especially problematic if we're talking about merging PRs that may affect another developer's work, either causing problems or delays for them. This can also lead to a situation where you think you've deployed something but haven't actually finished a deployment, this can lead to miscommunication with teammates and customers (e.g. "Go ahead and try that again, the bug should be fixed").
+
+There are several solutions to this problem ranging from simple notifications to more complicated processes that simply merge passing code if certain conditions are met. We're going to discuss notifications as a simple solution since it's the one that interferes with the team workflow the least.
+
+By default, GitHub Actions sends an email on a build failure. This can be changed to send notifications regardless of build status and can also be configured to alert you on the GitHub web interface. Great. But what if we want more. What if for whatever reason this doesn't work for our use case.
+
+There are integrations for example to various messaging applications such as [Slack](https://slack.com/intl/en-fi/) or [Discord](https://discord.com/), to send notifications. These integrations still decide what to send and when to send it based on logic from GitHub.
+
+<hr style="border: 2px solid #9C7AA6">
+
+### Exercise 11.18
+
+We have set up a channel *fullstack_webhook* to the course Discord group at https://study.cs.helsinki.fi/discord/join/fullstack for testing a messaging integration.
+
+Register now to Discord if you have not already done that. You will also need a Discord webhook in this exercise. You find the webhook in the pinned message of the channel fullstack_webhook. Please do not commit the webhook to GitHub!
+
+#### 11.18 Build success/failure notification action
+
+You can find quite a few third-party actions from [GitHub Action Marketplace](https://github.com/marketplace?type=actions) by using the search phrase [discord](https://github.com/marketplace?type=actions&query=discord). Pick one for this exercise. My choice was [discord-webhook-notify](https://github.com/marketplace/actions/discord-webhook-notify) since it has quite a few stars and decent documentation.
+
+Setup the action so that it gives two types of notifications:
+
+- A success indication if a new version gets displayed
+
+- An error indicating if a build fails
+
+In the case of an error, the notification should be a bit more verbose to help developers find quickly which is the commit that caused it.
+
+See [here](https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions) how to check the job status!
+
+Your notifications may look like the following:
+
+![alt text](assets/image22.png)
 
 <hr style="border: 2px solid #9C7AA6">
