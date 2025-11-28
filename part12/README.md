@@ -57,3 +57,42 @@ Step 2: Download this [repository](https://github.com/fullstack-hy2020/part12-co
 Step 3: Run curl http://helsinki.fi and save the output into a file. Save that file into your repository as file *script-answers/exercise12_1.txt*. The directory *script-answers* was created in the previous step.
 
 <hr style="border: 2px solid #FAB9D3">
+
+### Submitting exercises and earning credits
+
+Submit the exercises via the [submissions system](https://studies.cs.helsinki.fi/stats/) just like in the previous parts. Exercises in this part are submitted *to its [own course instance](https://studies.cs.helsinki.fi/stats/courses/fs-containers)*.
+
+Completing this part on containers will get you 1 credit. Note that you need to do all the exercises for earning the credit or the certificate.
+
+Once you have completed the exercises and want to get the credits, let us know through the exercise submission system that you have completed the course:
+
+![alt text](./assets/image.png)
+
+You can download the certificate for completing this part by clicking one of the flag icons. The flag icon corresponds to the language of the certificate.
+
+### Tools of the trade
+
+The basic tools you are going to need vary between operating systems:
+
+- WSL 2 terminal on Windows
+
+- Terminal on Mac
+
+- Command Line on a Linux
+
+### Installing everything required for this part
+
+We will begin by installing the required software. The installation step will be one of the possible obstacles. As we are dealing with OS-level virtualization, the tools will require superuser access on the computer. They will have access to your operating systems kernel.
+
+The material is built around [Docker](https://www.docker.com/), a set of products that we will use for containerization and the management of containers. Unfortunately, if you can not install Docker you probably can not complete this part.
+
+As the install instructions depend on your operating system, you will have to find the correct install instructions from the link below. Note that they may have multiple different options for your operating system.
+
+- [Get Docker](https://docs.docker.com/get-docker/)
+
+Now that that headache is hopefully over, let's make sure that our versions match. Yours may have a bit higher numbers than here:
+
+```bash
+$ docker -v
+Docker version 25.0.3, build 4debf41
+```
