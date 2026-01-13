@@ -213,3 +213,94 @@ The step 1 will connect you straight into the container with bash. You will have
 Google should be able to help you with creating directories and files.
 
 <hr style="border: 2px solid #FAB9D3">
+
+### Ubuntu image
+
+The command you just used to run the Ubuntu container, `docker container run -it ubuntu bash`, contains a few additions to the previously run hello-world. Let's see the --help to get a better understanding. I'll cut some of the output so we can focus on the relevant parts.
+
+```bash
+$ docker container run --help
+
+Usage:  docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]
+Run a command in a new container
+
+Options:
+  ...
+  -i, --interactive                    Keep STDIN open even if not attached
+  -t, --tty                            Allocate a pseudo-TTY
+  ...
+```
+
+The two options, or flags, `-it` make sure we can interact with the container. After the options, we defined that the image to run is `ubuntu`. Then we have the command `bash` to be executed inside the container when we start it.
+
+You can try other commands that the Ubuntu image might be able to execute. As an example try `docker container run --rm ubuntu ls`. The `ls` command will list all of the files in the directory and `--rm` flag will remove the container after execution. Normally containers are not deleted automatically.
+
+Let's continue with our first Ubuntu container with the **index.js** file inside of it. The container has stopped running since we exited it. We can list all of the containers with `container ls -a`, the `-a` (or --all) will list containers that have already been exited.
+
+```bash
+$ docker container ls -a
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS                            NAMES
+b8548b9faec3   ubuntu    "bash"    3 minutes ago    Exited (0) 6 seconds ago          hopeful_clarke
+```
+
+> *Editor's note: the command* `docker container ls` *has also a shorter form* `docker ps`.
+
+We have two options when addressing a container. The identifier in the first column can be used to interact with the container almost always. Plus, most commands accept the container name as a more human-friendly method of working with them. The name of the container was automatically generated to be **"hopeful_clarke"** in my case.
+
+The container has already exited, yet we can start it again with the start command that will accept the id or name of the container as a parameter: `start CONTAINER-ID-OR-CONTAINER-NAME`.
+
+```bash
+$ docker start hopeful_clarke
+hopeful_clarke
+```
+
+The start command will start the same container we had previously. Unfortunately, we forgot to start it with the flag `--interactive` (that can also be written `-i`) so we can not interact with it.
+
+The container is actually up and running as the command `container ls -a` shows, but we just can not communicate with it:
+
+```bash
+$ docker container ls -a
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS                            NAMES
+b8548b9faec3   ubuntu    "bash"    7 minutes ago    Up (0) 15 seconds ago            hopeful_clarke
+```
+
+Note that we can also execute the command without the flag `-a` to see just those containers that are running:
+
+```bash
+$ docker container ls
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS             NAMES
+8f5abc55242a   ubuntu    "bash"    8 minutes ago    Up 1 minutes       hopeful_clarke             
+```
+
+Let's kill it with the `kill CONTAINER-ID-OR-CONTAINER-NAME` command and try again.
+
+```bash
+$ docker kill hopeful_clarke
+hopeful_clarke
+```
+
+`docker kill` sends a [signal SIGKILL](https://man7.org/linux/man-pages/man7/signal.7.html) to the process forcing it to exit, and that causes the container to stop. We can check it's status with `container ls -a`:
+
+```bash
+$ docker container ls -a
+CONTAINER ID   IMAGE     COMMAND   CREATED             STATUS                     NAMES
+b8548b9faec3   ubuntu     "bash"   26 minutes ago      Exited 2 seconds ago       hopeful_clarke
+```
+
+Now let us start the container again, but this time in interactive mode:
+
+```bash
+$ docker start -i hopeful_clarke
+root@b8548b9faec3:/#
+```
+
+Let's edit the file *index.js* and add in some JavaScript code to execute. We are just missing the tools to edit the file. [Nano](https://www.nano-editor.org/) will be a good text editor for now. The install instructions were found from the first result of Google. We will omit using sudo since we are already root.
+
+```bash
+root@b8548b9faec3:/# apt-get update
+root@b8548b9faec3:/# apt-get -y install nano
+root@b8548b9faec3:/# nano /usr/src/app/index.js
+```
+
+Now we have Nano installed and can start editing files!
+
