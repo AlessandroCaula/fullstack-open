@@ -185,3 +185,31 @@ For more examples and ideas, visit:
 ```
 
 The output contains a few new things for us to learn. Docker daemon is a background service that makes sure the containers are running, and we use the Docker client to interact with the daemon. We now have interacted with the first image and created a container from the image. During the execution of that container, we received the output.
+
+<hr style="border: 2px solid #FAB9D3">
+
+### Exercise 12.2
+
+Some of these exercises do not require you to write any code or configurations to a file. In these exercises you should use the [script](https://man7.org/linux/man-pages/man1/script.1.html) command to record the commands you have used try it yourself with `script` to start recording, `echo "hello"` to generate some output, and `exit` to stop recording. It saves your actions into a file name "typescript" (that has nothing to do with the TypeScript programming language, the name is just a coincidence).
+
+If `script` does not work, you can just copy-paste all commands you used into a text file.
+
+#### Exercise 12.2: running you second container
+
+> Use `script` to record what you do, save the file as script=answers/exercise12_2.txt
+
+The hello-world output gave use an ambitious task to do. Do the following:
+
+- Step 1. Run an Ubuntu container with the command given by hello-world
+
+The step 1 will connect you straight into the container with bash. You will have access to all of the files and tools inside of the container. The following steps are run within the container:
+
+- Step 2. Create directory */usr/src/app*
+
+- Step 3. Create a file */usr/src/app/index.js*
+
+- Step 4. Run *exit* to quit from the container
+
+Google should be able to help you with creating directories and files.
+
+<hr style="border: 2px solid #FAB9D3">
