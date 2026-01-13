@@ -96,3 +96,92 @@ Now that that headache is hopefully over, let's make sure that our versions matc
 $ docker -v
 Docker version 25.0.3, build 4debf41
 ```
+
+### Containers and images
+
+There are two core concepts in this part: *container* and *image*. They are easy to confuse with one another.
+
+A *container* is a runtime instance of an *image*.
+
+Both of the following statements are true:
+
+- Images include all of the code, dependencies and instructions on how to run the application
+
+- Container package software into standardized units
+
+It is no wonder they are easily mixed up.
+
+To help with the confusion, almost everyone uses the word container to describe both. But you can never actually build a container or download one since containers only exist during runtime. Images, on the other hand, are **immutable** files. As a result of the immutability, you can not edit an image after you have created one. However, you can use existing images to create a *new image* by adding new layers on top of the existing ones.
+
+Cooking metaphor:
+
+- Image is pre-cooked, frozen treat.
+
+- Container is the delicious treat.
+
+[Docker](https://www.docker.com/) is the most popular containerization technology and pioneered the standards most containerization technologies use today. In practice, Docker is a set of products that help us to manage images and containers. This set of products will enable us to leverage all of the benefits of containers. For example, the Docker engine will take care of turning the immutable files called images into containers.
+
+For managing the Docker containers, there is also a tool called [Docker Compose](https://docs.docker.com/compose/) that allows one to **orchestrate** (control) multiple containers at the same time. In this part we shall use Docker Compose to set up a complex local development environment. In the final version of the development environment that we will set up, even installing Node in our machine will not be required anymore.
+
+There are several concepts we need to go over. But we will skip those for now and learn about Docker first!
+
+Let us start with the command *docker container run* that is used to run images within a container. The command structure is the following: `container run IMAGE-NAME` that we will tell Docker to create a container from an image. A particularly nice feature of the command is that it can run a container even if the image to run is not downloaded on our device yet.
+
+Let us run the command
+
+```bash
+$ docker container run hello-world
+```
+
+There will be a lot of output, but let's split it into multiple sections, which we can decipher together. The lines are numbered by me so that it is easier to follow the explanation. Your output will not have the numbers.
+
+```bash
+1. Unable to find image 'hello-world:latest' locally
+2. latest: Pulling from library/hello-world
+3. b8dfde127a29: Pull complete
+4. Digest: sha256:5122f6204b6a3596e048758cabba3c46b1c937a46b5be6225b835d091b90e46c
+5. Status: Downloaded newer image for hello-world:latest
+```
+
+Because the image *hello-world* was not found on our machine, the command first downloaded it from a free registry called [Docker Hub](https://hub.docker.com/). You can see the Docker Hub page of the image with your browser here: https://hub.docker.com/_/hello-world
+
+The first part of the message states that we did not have the image "hello-world:latest" yet. This reveals a bit of detail about images themselves; image names consist of multiple parts, kind of like an URL. An image name is in the following format:
+
+- `registry/organisation/image:tag`
+
+In this case the 3 missing fields defaulted to:
+
+- `index.docker.io/library/hello-world:latest`
+
+The second row shows the organisation name, "library" where it will get the image. In the Docker Hub URL, the "library" is shortened to _.
+
+The 3rd and 5th rows only show the status. But the 4th row may be interesting: each image has a unique digest based on the *layers* from which the image is built. In practice, each step or command that was used in building the image creates a unique layer. The digest is used by Docker to identify that an image is the same. This is done when you try to pull the same image again.
+
+So the result of using the command was a pull and then output information about the **image**. After that, the status told us that a new version of *hello-world:latest* was indeed downloaded. You can try pulling the image with` docker image pull hello-world` and see what happens.
+
+The following output was from the container itself. It also explains what happened when we ran `docker container run hello-world`.
+
+```bash
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker container run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+```
+
+The output contains a few new things for us to learn. Docker daemon is a background service that makes sure the containers are running, and we use the Docker client to interact with the daemon. We now have interacted with the first image and created a container from the image. During the execution of that container, we received the output.
