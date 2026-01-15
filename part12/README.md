@@ -324,6 +324,22 @@ If you are not familiar with Nano you can ask for help in the chat or Google.
 
 > Use `script` to record what you do, save the file as script-answers/exercise12_4.txt
 
+Install Node while inside the container and run the index file with node `/usr/src/app/index.js` in the container.
 
+The instructions for installing Node are sometimes hard to find, so here is something you can copy-paste:
+
+```bash
+curl -sL https://deb.nodesource.com/setup_20.x | bash
+apt install -y nodejs
+```
+
+You will need to install the `curl` into the container. It is installed in the same way as you did with `nano`.
+
+After the installation, ensure that you can run your code inside the container with the command:
+
+```bash
+root@b8548b9faec3:/# node /usr/src/app/index.js
+Hello World
+```
 
 <hr style="border: 2px solid #FAB9D3">

@@ -1,0 +1,4 @@
+apt-get -y install curl
+apt install -y nodejs
+root@d879ad8d087d:/# node /usr/src/app/index.js 
+Hello World
