@@ -1,0 +1,32 @@
+~/Doc/De/G/fullstack-open/part12 | part-12.0 !1 ?1  docker start -i vigilant_pascal 
+root@d879ad8d087d:/# ls
+bin   dev  home  media  opt   root  sbin  sys  usr
+boot  etc  lib   mnt    proc  run   srv   tmp  var
+root@d879ad8d087d:/# cd usr/
+root@d879ad8d087d:/usr# ls
+bin  games  include  lib  libexec  local  sbin  share  src
+root@d879ad8d087d:/usr# cd src/
+root@d879ad8d087d:/usr/src# ls
+app
+root@d879ad8d087d:/usr/src# cd app/
+root@d879ad8d087d:/usr/src/app# ls
+index.js
+root@d879ad8d087d:/usr/src/app# ls 
+index.js
+root@d879ad8d087d:/usr/src/app# nano index.js 
+root@d879ad8d087d:/usr/src/app# cat index.js 
+console.log("Hello World")
+root@d879ad8d087d:/usr/src/app# less index.js 
+bash: less: command not found
+root@d879ad8d087d:/usr/src/app# cat index.js 
+console.log("Hello World")
+root@d879ad8d087d:/usr/src/app# less index.js 
+bash: less: command not found
+root@d879ad8d087d:/usr/src/app# nano index.js 
+root@d879ad8d087d:/usr/src/app# cat index.js 
+console.log("Hello World")
+console.log("Ciao")
+root@d879ad8d087d:/usr/src/app# nano index.js 
+root@d879ad8d087d:/usr/src/app# cat index.js 
+console.log("Hello World")
+root@d879ad8d087d:/usr/src/app#

@@ -304,3 +304,26 @@ root@b8548b9faec3:/# nano /usr/src/app/index.js
 
 Now we have Nano installed and can start editing files!
 
+<hr style="border: 2px solid #FAB9D3">
+
+### Exercise 12.3 - 12.4
+
+#### Exercise 12.3: Ubuntu 101
+
+> Use `script` to record what you do, save the file as script-answers/exercise12_3.txt
+
+Edit the `/usr/src/app/index.js` file inside the container with the now installed Nano and add the following line
+
+```js
+console.log("Hello world")
+```
+
+If you are not familiar with Nano you can ask for help in the chat or Google.
+
+#### Exercise 12.4: Ubuntu 102
+
+> Use `script` to record what you do, save the file as script-answers/exercise12_4.txt
+
+
+
+<hr style="border: 2px solid #FAB9D3">
