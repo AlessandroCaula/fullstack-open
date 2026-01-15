@@ -343,3 +343,70 @@ Hello World
 ```
 
 <hr style="border: 2px solid #FAB9D3">
+
+### Other Docker commands
+
+Now that we have Node installed in the container, we can execute JavaScript in the container! Let's create a new image from the container. The command
+
+```bash
+commit CONTAINER-ID-OR-CONTAINER-NAME NEW-IMAGE-NAME
+```
+
+will create a new image that includes the changes we have made. You can use `container diff` to check for the changes between the original image and container before doing so.
+
+```bash
+$ docker commit hopeful_clarke hello-node-world
+```
+
+You can list your images with `image ls`:
+
+```bash
+$ docker image ls
+REPOSITORY                                      TAG         IMAGE ID       CREATED         SIZE
+hello-node-world                                latest      eef776183732   9 minutes ago   252MB
+ubuntu                                          latest      1318b700e415   2 weeks ago     72.8MB
+hello-world                                     latest      d1165f221234   5 months ago    13.3kB
+```
+
+You can now run the new image as follows:
+
+```bash
+docker run -it hello-node-world bash
+root@4d1b322e1aff:/# node /usr/src/app/index.js
+```
+
+There are multiple ways to do the same. Let's try a better solution. We will clean the slate with `container rm` to remove the old container.
+
+```bash
+$ docker container ls -a
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS                  NAMES
+b8548b9faec3   ubuntu    "bash"    31 minutes ago   Exited (0) 9 seconds ago               hopeful_clarke
+
+$ docker container rm hopeful_clarke
+hopeful_clarke
+```
+
+Create a file *index.js* to your current directory and write `console.log('Hello, World')` inside it. No need for containers yet.
+
+Next, let's skip installing Node altogether. There are plenty of useful Docker images in Docker Hub ready for our use. Let's use the image https://hub.docker.com/_/node, which has Node already installed. We only need to pick a version.
+
+By the way, the `container run` accepts `--name` flag that we can use to give a name for the container.
+
+```bash
+$ docker container run -it --name hello-node node:20 bash
+```
+
+Let us create a directory for the code inside the container:
+
+```bash
+root@77d1023af893:/# mkdir /usr/src/app
+```
+
+While we are inside the container on this terminal, open another terminal and use the `container cp` command to copy file from your own machine to the container.
+
+```bash
+$ docker container cp ./index.js hello-node:/usr/src/app/index.js
+```
+
+And now we can run `node /usr/src/app/index.js` in the container. We can commit this as another new image, but there is an even better solution. The next section will be all about building your images like a pro.
+
