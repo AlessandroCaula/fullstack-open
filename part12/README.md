@@ -410,3 +410,72 @@ $ docker container cp ./index.js hello-node:/usr/src/app/index.js
 
 And now we can run `node /usr/src/app/index.js` in the container. We can commit this as another new image, but there is an even better solution. The next section will be all about building your images like a pro.
 
+## Part 12b - Building and configuring environments
+
+In the previous section, we used two different base images: ubuntu and node, and did some manual work to get a simple "Hello, World!" running. The tools and commands we learned during that process will be helpful. In this section, we will learn how to build images and configure environments for our applications. We will start with a regular Express/Node.js backend and build on top of that with other services, including a MongoDB database.
+
+### Dockerfile
+
+Instead of modifying a container by copying files inside, we can create a new image that contains the "Hello, World!" application. The tool for this is the Dockerfile. Dockerfile is a simple text file that contains all of the instructions for creating an image. Let's create an example Dockerfile from the "Hello, World!" application.
+
+If you did not already, create a directory on your machine and create a file called *Dockerfile* inside that directory. Let's also put an *index.js* containing `console.log('Hello, World!')` next to the Dockerfile. Your directory structure should look like this:
+
+```bash
+index.js
+Dockerfile
+```
+
+inside that Dockerfile we will tell the image three things:
+
+- Use the [node:20](https://hub.docker.com/_/node) as the base for our image
+
+- Include the index.js file inside the image, so we don't need to manually copy it into the container
+
+- When we run a container from the image, use Node to execute the index.js file.
+
+The wishes above will translate into a basic Dockerfile. The best location to place this file is usually at the root of the project.
+
+The resulting *Dockerfile* looks like this:
+
+```dockerfile
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY ./index.js ./index.js
+
+CMD node index.js
+```
+
+`FROM` instruction will tell Docker that the base for the image should be node:20. `COPY` instruction will copy the file *index.js* from the host machine to the file with the same name in the image. `CMD` instruction tells what happens when `docker run` is used. `CMD` is the default command that can then be overwritten with the argument given after the image name. 
+See `docker run --help` if you forgot.
+
+The `WORKDIR` instruction was slipped in to ensure we don't interfere with the contents of the image. It will guarantee all of the following commands will have */usr/src/app* set as the working directory. If the directory doesn't exist in the base image, it will be automatically created.
+
+If we do not specify a `WORKDIR`, we risk overwriting important files by accident. If you check the root (`/`) of the node:20 image with `docker run node:20 ls`, you can notice all of the directories and files that are already included in the image.
+
+Now we can use the command `docker build` to build an image based on the Dockerfile. Let's spice up the command with one additional flag: `-t`, this will help us name the image:
+
+```bash
+$ docker build -t fs-hello-world . 
+[+] Building 3.9s (8/8) FINISHED
+...
+```
+
+So the result is "Docker please build with tag (you may think of the tag as the name of the resulting image.) *fs-hello-world* the Dockerfile in this directory". You can point to any Dockerfile, but in our case, a simple dot will mean the Dockerfile is in *this* directory. That is why the command ends with a period. After the build is finished, you can run it with `docker run fs-hello-world`:
+
+```bash
+$ docker run fs-hello-world
+Hello, World
+```
+
+As images are just files, they can be moved around, downloaded and deleted. You can list the images you have locally with `docker image ls`, delete them with `docker image rm`. See what other command you have available with `docker image --help`.
+
+One more thing: before it was mentioned that the default command, defined by the CMD in the Dockerfile, can be overwritten if needed. We could e.g. open a bash session to the container and observe it's content:
+
+```bash
+$ docker run -it fs-hello-world bash
+root@2932e32dbc09:/usr/src/app# ls
+index.js
+root@2932e32dbc09:/usr/src/app#
+```
