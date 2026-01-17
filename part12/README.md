@@ -479,3 +479,79 @@ root@2932e32dbc09:/usr/src/app# ls
 index.js
 root@2932e32dbc09:/usr/src/app#
 ```
+
+### More meaningful image
+
+Moving an Express server to a container should be as simple as moving the "Hello, World!" application inside a container. The only difference is that there are more files. Thankfully `COPY` instruction can handle all that. Let's delete the index.js and create a new Express server. Lets use [express-generator](https://expressjs.com/en/starter/generator.html) to create a basic Express application skeleton.
+
+```bash
+$ npx express-generator
+  ...
+  
+  install dependencies:
+    $ npm install
+
+  run the app:
+    $ DEBUG=playground:* npm start
+```
+
+First, let's run the application to get an idea of what we just created. Note that the command to run the application may be different from you, my directory was called playground.
+
+```bash
+$ npm install
+$ DEBUG=playground:* npm start
+  playground:server Listening on port 3000 +0ms
+```
+
+Great, so now we can navigate to http://localhost:3000 and the app is running there.
+
+Containerizing that should be relatively easy based on the previous example.
+
+- Use node as base
+
+- Set working directory so we don't interfere with the contents of the base image
+
+- Copy ALL of the files in this directory to the image
+
+- Start with DEBUG=playground:* npm start
+
+Let's place the following Dockerfile at the root of the project:
+
+```dockerfile
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+CMD DEBUG=playground:* npm start
+```
+
+Let's build the image from the Dockerfile and then run it:
+
+```bash
+docker build -t express-server .
+docker run -p 3123:3000 express-server
+```
+
+The `-p` flag in the run command will inform Docker that a port from the host machine should be opened and directed to a port in the container. The format is `-p host-port:application-port`.
+
+The application is now running! Let's test it by sending a GET request to http://localhost:3123/.
+
+> If yours doesn't work, skip to the next section. There is an explanation why it may not work even if you followed the steps correctly.
+
+Shutting the app down is a headache at the moment. Use another terminal and `docker kill` command to kill the application. The `docker kill` will send a kill signal (SIGKILL) to the application to force it to shut down. It needs the name or the id of the container as an argument.
+
+By the way, when using the id as the argument, the beginning of the ID is enough for Docker to know which container we mean.
+
+```bash
+$ docker container ls
+  CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+  48096ca3ffec   express-server   "docker-entrypoint.s…"   9 seconds ago   Up 6 seconds   0.0.0.0:3123->3000/tcp, :::3123->3000/tcp   infallible_booth
+
+$ docker kill 48
+  48
+```
+
+In the future, let's use the same port on both sides of `-p`. Just so we don't have to remember which one we happened to choose.
+
