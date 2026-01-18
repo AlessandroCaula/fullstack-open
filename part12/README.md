@@ -667,3 +667,15 @@ USER node
 
 CMD npm start
 ```
+
+<hr style="border: 2px solid #FAB9D3">
+
+### Exercise 12.5
+
+#### Exercise 12.5: Containerizing a Node application
+
+The repository that you cloned or copied in the [first exercise](#exercise-121) contains a todo-app. See the todo-app/todo-backend and read through the README. We will not touch the todo-frontend yet.
+
+
+
+<hr style="border: 2px solid #FAB9D3">
