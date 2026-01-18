@@ -555,3 +555,115 @@ $ docker kill 48
 
 In the future, let's use the same port on both sides of `-p`. Just so we don't have to remember which one we happened to choose.
 
+#### Fixing potential issues we created by copy-pasting 
+
+There are a few steps we need to change to create a more comprehensive Dockerfile. It may even be that the above example doesn't work in all cases because we skipped an important step.
+
+When we ran npm install on our machine, in some cases the **Node package manager** may install operating system specific dependencies during the install step. We may accidentally move non-functional parts to the image with the COPY instruction. This can easily happen if we copy the *node_modules* directory into the image.
+
+This is a critical thing to keep in mind when we build our images. It's best to do most things, such as to run `npm install` during the build process *inside the container* rather than doing those prior to building. The easy rule of thumb is to only copy files that you would push to GitHub. Build artifacts or dependencies should not be copied since those can be installed during the build process.
+
+We can use *.dockerignore* to solve the problem. The file .dockerignore is very similar to .gitignore, you can use that to prevent unwanted files from being copied to your image. The file should be placed next to the Dockerfile. Here is a possible content of a *.dockerignore*
+
+```
+.dockerignore
+.gitignore
+node_modules
+Dockerfile
+```
+
+However, in our case, the .dockerignore isn't the only thing required. We will need to install the dependencies during the build step. The `Dockerfile` changes to:
+
+```dockerfile
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY . . 
+
+RUN nom install
+CMD DEBUG=playground:* npm start
+```
+
+The npm install can be risky. Instead of using npm install, npm offers a much better tool for installing dependencies, the `ci` command.
+
+Differences between `ci` and `install`:
+
+- install may update the package-lock.json
+
+- install may install a different version of a dependency if you have ^ or ~ in the version of the dependency.
+
+- ci will delete the node_modules folder before installing anything
+
+- ci will follow the package-lock.json and does not alter any files
+
+So in short: `ci` creates reliable builds, while `install` is the one to use when you want to install new dependencies.
+
+As we are not installing anything new during the build step, and we don't want the versions to suddenly change, we will use `ci`:
+
+```dockerfile
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN npm ci
+CMD DEBUG=playground:* npm start
+```
+
+Even better, we can use `npm ci --omit=dev` to not waste time installing development dependencies.
+
+> As you noticed in the comparison list; npm ci will delete the node_modules folder so creating the .dockerignore did not matter. However, .dockerignore is an amazing tool when you want to optimize your build process. We will talk briefly about these optimizations later.
+
+Now the Dockerfile should work again, try it with `docker build -t express-server . && docker run -p 3123:3000 express-server`
+
+> Note that we are here chaining two bash commands with &&. We could get (nearly) the same effect by running both commands separately. When chaining commands with && if one command fails, the next ones in the chain will not be executed.
+
+We set an environment variable `DEBUG=playground:*` during CMD for the npm start. However, with Dockerfiles we could also use the instruction ENV to set environment variables. Let's do that:
+
+```dockerfile
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN npm ci
+
+ENV DEBUG=playground:*
+
+CMD npm start
+```
+
+> *If you're wondering what the DEBUG environment variable does, read [here](http://expressjs.com/en/guide/debugging.html#debugging-express)*.
+
+#### Dockerfile best practice
+
+There are 2 rules of thumb you should follow when creating images:
+
+- Try to create as **secure** of an image as possible
+
+- Try to create as **small** of an image as possible
+
+Smaller images are more secure by having less attack surface area, and also more faster in deployment pipelines.
+
+Snyk has a great list of the 10 best practices for Node/Express containerization. Read those [here](https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/).
+
+One big carelessness we have left is running the application as root instead of using a user with lower privileges. Let's do a final fix to the Dockerfile:
+
+```dockerfile
+FROM node:20
+  
+WORKDIR /usr/src/app
+
+COPY --chown=node:node . .
+
+RUN npm ci 
+
+ENV DEBUG=playground:*
+  
+USER node
+
+CMD npm start
+```
