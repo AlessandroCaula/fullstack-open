@@ -1,5 +1,4 @@
-import React from 'react'
-
+/* eslint-disable react/prop-types */
 const TodoList = ({ todos, deleteTodo, completeTodo }) => {
   const onClickDelete = (todo) => () => {
     deleteTodo(todo)
@@ -34,14 +33,14 @@ const TodoList = ({ todos, deleteTodo, completeTodo }) => {
         )
 
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '70%', margin: 'auto' }}>
+          <div key={todo} style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '70%', margin: 'auto' }}>
             <span>
               {todo.text} 
             </span>
             {todo.done ? doneInfo : notDoneInfo}
           </div>
         )
-      }).reduce((acc, cur) => [...acc, <hr />, cur], [])}
+      }).reduce((acc, cur) => [...acc, <hr key={acc}/>, cur], [])}
     </>
   )
 }
