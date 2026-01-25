@@ -715,4 +715,12 @@ Creating files like `docker-compose.yml` that *declare* what you want instead of
 
 <hr style="border: 2px solid #FAB9D3">
 
+### Exercise 12.6
+
+#### Exercise 12.6: Docker compose
+
+Create a *todo-app/todo-backend/docker-compose.yml* file that works with the Node application from the previous exercise.
+
+The visit counter is the only feature that is required to be working.
+
 <hr style="border: 2px solid #FAB9D3">
