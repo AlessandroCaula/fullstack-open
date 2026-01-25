@@ -683,3 +683,36 @@ The repository that you cloned or copied in the [first exercise](#exercise-121) 
 Tip: Run the application outside of a container to examine it before starting to containerize.
 
 <hr style="border: 2px solid #FAB9D3">
+
+### Using Docker compose
+
+In the previous section, we created an Express server, knowing that it will run in port 3123, and used the commands `docker build -t express-server . && docker run -p 3123:3000 express server` to run it. This already looks like something you would need to put into a script to remember. Fortunately, Docker offers us a better solution.
+
+[Docker compose](https://docs.docker.com/compose/) is another fantastic tool, which can help us to manage containers. Let's start using compose as we learn more about containers as it will help us save some time with the configuration.
+
+Now we can turn the previous spell into a yaml file. The best part about yaml files is that you can save these to a Git repository!
+
+Create the file **docker-compose.yml** and place it at the root of the project, next to the Dockerfile. This time we will use the same port for host and container. The file content is:
+
+```yml
+services:
+  app:                    # The name of the service, can be anything
+    image: express-server # Declares which image to use
+    build: .              # Declares where to build if image is not found
+    ports:                # Declares the ports to publish
+      - 3000:3000
+```
+
+The meaning of each line is explained as a comment. If you want to see the full specification see the [documentation](https://docs.docker.com/compose/compose-file/).
+
+Now we can use `docker compose up` to build and run the application. If we want to rebuild the images we can use `docker compose up --build`.
+
+You can also run the application in the background with `docker compose up -d` (`-d` for detached) and close it with `docker compose down`.
+
+> Note that some older Docker versions (especially in Windows) do not support the command `docker compose`. One way to circumvent this problem is to [install](https://docs.docker.com/compose/install/) the stand alone command `docker-compose` that works mostly similarly to `docker compose`. However, the preferable fix is to update the Docker to a more recent version.
+
+Creating files like `docker-compose.yml` that *declare* what you want instead of script files that you need to run in a specific order / a specific number of times is often a great practice.
+
+<hr style="border: 2px solid #FAB9D3">
+
+<hr style="border: 2px solid #FAB9D3">
