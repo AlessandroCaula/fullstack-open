@@ -724,3 +724,64 @@ Create a *todo-app/todo-backend/docker-compose.yml* file that works with the Nod
 The visit counter is the only feature that is required to be working.
 
 <hr style="border: 2px solid #FAB9D3">
+
+### Utilizing containers in development
+
+When you are developing software, containerization can be used in various ways to improve your quality of life. One of the most useful cases is by bypassing the need to install and configure tools twice.
+
+It may not be the best option to move your entire development environment into a container, but if that's what you want it's certainly possible. We will revisit this idea at the end of this part. But until then, *run the Node application itself outside of containers*.
+
+The application we met in the previous exercise uses MongoDB. Let's explore [Docker Hub](https://hub.docker.com/) to find a MongoDB image. Docker Hub is the default place where Docker pulls the images from, you can use other registries as well, but since we are already knee-deep in Docker it's a good choice. With a quick search, we can find https://hub.docker.com/_/mongo.
+
+Create a new yaml called todo-app/todo-backend/docker-compose.dev.yml that looks like following:
+
+```yml
+services:
+  mongo: 
+    image: mongo
+    ports:
+      - 3456:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+```
+
+The meaning of the two first environment variables defined above is explained on the Docker Hub page:
+
+> These variables, used in conjunction, create a new user and set that user's password. This user is created in the admin authentication database and given the role of root, which is a "superuser" role.
+
+The last environment variable `MONGO_INITDB_DATABASE` will tell MongoDB to create a database with that name.
+
+You can use `-f` flag to specify a *file* to run the Docker Compose command with e.g.
+
+```bash
+docker compose -f docker-compose.dev.yml up
+```
+
+Now that we may have multiple compose files, it's useful.
+
+Next, start the MongoDB with `docker compose -f docker-compose.dev.yml up -d`. With `-d` it will run it in the background. You can view the output logs with `docker compose -f docker-compose.dev.yml logs -f`. There the `-f` will ensure we follow the logs.
+
+As said previously, currently we **do not** want to run the Node application inside a container. Developing while the application itself is inside a container is a challenge. We will explore that option later in this part.
+
+Run the good old `npm install` first on your machine to set up the Node application. Then start the application with the relevant environment variable. You can modify the code to set them as the defaults or use the .env file. There is no hurt in putting these keys to GitHub since they are only used in your local development environment. I'll just throw them in with the npm run dev to help you copy-paste.
+
+```bash
+MONGO_URL=mongodb://localhost:3456/the_database npm run dev
+```
+
+This won't be enough; we need to create a user to be authorized inside of the container. The url http://localhost:3000/todos leads to an authentication error:
+
+```bash
+[nodemon] 2.0.12
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node ./bin/www`
+/Users/mluukkai/dev/fs-ci-lokakuu/repo/todo-app/todo-backend/node_modules/mongodb/lib/cmap/connection.js:272
+          callback(new MongoError(document));
+                   ^
+MongoError: command find requires authentication
+    at MessageStream.messageHandler (/Users/mluukkai/dev/fs-ci-lokakuu/repo/todo-app/todo-backend/node_modules/mongodb/lib/cmap/connection.js:272:20)
+```
